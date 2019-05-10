@@ -5,6 +5,7 @@ class NegociacaoController {
     this._inputData = $('#data')
     this._inputQuantidade = $('#quantidade')
     this._inputValor = $('#valor')
+    this._listaNegociacoes = new ListaNegociacoes()
   }
 
   adiciona (event) {
@@ -12,18 +13,26 @@ class NegociacaoController {
 
     //console.log(typeof(this._inputData.value)) // imprime o tipo do valor
 
-    let data = new Date(
-      ...this._inputData.value // adicionando um "Spread Operator" para indicar que o array será desmembrado
-        .split('-') // transforma a string em um array usando a função split e usando o "-" como critério de separação
-        .map((item, index) => item - index % 2)
-    )
+    this._listaNegociacoes.setNegociacoes(this._criaNegociacao())
+    this._limpaFormulario()
+    console.log(this._listaNegociacoes.negociacoes)
 
-    let negociacao = new Negociacao(
-      data,
+  }
+
+  _criaNegociacao () {
+    return new Negociacao(
+      DateHelper.textoParaData(this._inputData.value),
       this._inputQuantidade.value,
       this._inputValor.value
     )
+  }
 
-    console.log(negociacao)
+  _limpaFormulario () {
+    this._inputData.value = ''
+    this._inputQuantidade.value = 1
+    this._inputValor.value = 0.0
+
+    this._inputData.focus()
+
   }
 }
