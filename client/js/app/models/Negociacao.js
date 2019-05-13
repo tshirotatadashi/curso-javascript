@@ -8,7 +8,7 @@ class Negociacao {
   }
 
   get volume () { // Método desfaçado de atributo
-    return this._quantidade * this._quantidade;
+    return this._quantidade * this._valor;
   }
 
   get data () {
