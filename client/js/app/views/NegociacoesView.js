@@ -1,9 +1,8 @@
-class NegociacoesView {
-  constructor (elemento) {
-    this._elemento = elemento
-  }
+class NegociacoesView extends View {
 
-  _template (model) {
+  // se for passar apenas os atributos do pai, não é necessário um Constructor
+
+  template (model) {
     return `
       <table class="table table-hover table-bordered">
         <thead>
@@ -32,9 +31,5 @@ class NegociacoesView {
         </tfoot>
       </table>
     `
-  }
-
-  update (model) {
-    this._elemento.innerHTML = this._template(model)
   }
 }
