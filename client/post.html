@@ -27,6 +27,7 @@
 
   <button class="btn btn-primary" type="submit" onclick="sendPost(event)">Enviar dados para servidor</button>
 </form>
+<script src="js/app/services/HttpConnect.js"></script>
 
 <script>
 
@@ -34,7 +35,6 @@
     event.preventDefault();
     console.log("Enviando post");
 
-    //aqui você deve ler os dados do formulário
     let $ = document.querySelector.bind(document)
     let idata = $('#data')
     let iquantidade = $('#quantidade')
@@ -47,8 +47,8 @@
     }
 
 
-    let service = new HttpConnet()
-    service.set('/negociacoes', negociacao, 'Content-type', 'application/json')
+    new HttpConnect()
+      .post('/negociacoes', negociacao, ['Content-type', 'application/json'])
       .then(ress => {
         idata.value = ''
         iquantidade.value = 0

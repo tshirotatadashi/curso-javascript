@@ -17,15 +17,17 @@ class HttpConnect {
     })
   }
 
-  post (url, payload) {
+  post (url, payload, headers) {
     return new Promise((resolve, reject) => {
       let xhr = new XMLHttpRequest()
       xhr.open('POST', url, true)
-      xhr.setRequestHeader(...arguments)
+      xhr.setRequestHeader(...headers)
       xhr.onreadystatechange = () => {
           if (xhr.readyState == 4) {
               if (xhr.status !== 200) {
-                console.log('Deu erro')
+                resolve(JSON.parse(xhr.responseText))
+              } else {
+                reject(xhr.responseText)
               }
           }
       }

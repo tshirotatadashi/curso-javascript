@@ -9,23 +9,37 @@ class NegociacaoController {
     this._listaNegociacoes = new Bind(
       new ListaNegociacoes(),
       new NegociacoesView($('#negociacoesView')),
-      'setNegociacoes', 'clearNegociacoes'
+      'setNegociacoes', 'clearNegociacoes', 'ordena', 'inverteOrdem'
     )
 
     this._mensagem = new Bind(new Mensagem(), new MensagemView($('#mensagemView'), 'Alerta'), 'texto')
+
+    this._ordemAtual = ''
   }
 
   adiciona (event) {
     event.preventDefault()
     //console.log(typeof(this._inputData.value)) // imprime o tipo do valor
-    this._listaNegociacoes.setNegociacoes(this._criaNegociacao())
-    this._mensagem.texto = 'Negociacao adicionada com sucesso'
-    this._limpaFormulario()
+    try {
+      this._listaNegociacoes.setNegociacoes(this._criaNegociacao())
+      this._mensagem.texto = 'Negociacao adicionada com sucesso'
+      this._limpaFormulario()
+    } catch (erro) {
+      this._mensagem.texto = erro
+    }
   }
 
   apaga () {
     this._listaNegociacoes.clearNegociacoes();
     this._mensagem.texto = 'Negociações apagadas com sucesso'
+  }
+
+  ordena (coluna) {
+    if (this._ordemAtual == coluna )
+      this._listaNegociacoes.inverteOrdem()
+    else
+      this._listaNegociacoes.ordena((a, b) => a[coluna] - b[coluna])
+    this._ordemAtual = coluna
   }
 
   importaNegociacoes () {
