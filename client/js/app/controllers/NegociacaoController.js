@@ -30,14 +30,11 @@ class NegociacaoController {
 
   importaNegociacoes () {
     let service = new NegociacaoService()
-    service.buscaSemana((erro, res) => {
-      if (erro) {
-        this._mensagem.texto = erro
-        return
-      }
-      res.map(negociacao => this._listaNegociacoes.setNegociacoes(negociacao))
+    service.obterNegociacoes().then(negociacoes => {
+      negociacoes.map(negociacao => this._listaNegociacoes.setNegociacoes(negociacao))
       this._mensagem.texto = 'Negociações importadas com sucesso'
     })
+    .catch(error => this._mensagem.texto = error)
   }
 
   _criaNegociacao () {
