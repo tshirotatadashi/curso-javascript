@@ -15,23 +15,40 @@ class NegociacaoController {
     this._mensagem = new Bind(new Mensagem(), new MensagemView($('#mensagemView'), 'Alerta'), 'texto')
 
     this._ordemAtual = ''
+
+    ConnectionFactory.getConnection()
+      .then(connection => new NegociacaoDao(connection))
+      .then(dao => dao.listaTodos())
+      .then(negociacoes => negociacoes.map(negociacao =>
+        this._listaNegociacoes.setNegociacoes(negociacao))
+      )
+      .catch(erro => this._mensagem.texto = erro)
   }
 
   adiciona (event) {
     event.preventDefault()
     //console.log(typeof(this._inputData.value)) // imprime o tipo do valor
-    try {
-      this._listaNegociacoes.setNegociacoes(this._criaNegociacao())
-      this._mensagem.texto = 'Negociacao adicionada com sucesso'
-      this._limpaFormulario()
-    } catch (erro) {
-      this._mensagem.texto = erro
-    }
+
+    let negociacao = this._criaNegociacao()
+    ConnectionFactory.getConnection()
+      .then(conexao => new NegociacaoDao(conexao).adiciona(negociacao))
+      .then(() => {
+        this._listaNegociacoes.setNegociacoes(negociacao)
+        this._mensagem.texto = 'Negociacao adicionada com sucesso'
+        this._limpaFormulario()
+      })
+      .catch(erro => this._mensagem.texto = erro)
   }
 
   apaga () {
-    this._listaNegociacoes.clearNegociacoes();
-    this._mensagem.texto = 'Negociações apagadas com sucesso'
+    ConnectionFactory.getConnection()
+      .then(connection => new NegociacaoDao(connection))
+      .then(dao => dao.apagaTodos())
+      .then(mensagem => {
+        this._mensagem.texto = mensagem
+        this._listaNegociacoes.clearNegociacoes();
+      })
+      .catch(erro => this._mensagem.texto = erro)
   }
 
   ordena (coluna) {
@@ -54,8 +71,8 @@ class NegociacaoController {
   _criaNegociacao () {
     return new Negociacao(
       DateHelper.textoParaData(this._inputData.value),
-      this._inputQuantidade.value,
-      this._inputValor.value
+      parseInt(this._inputQuantidade.value),
+      parseFloat(this._inputValor.value)
     )
   }
 
