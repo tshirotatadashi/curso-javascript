@@ -13,16 +13,22 @@ class NegociacaoController {
     )
 
     this._mensagem = new Bind(new Mensagem(), new MensagemView($('#mensagemView'), 'Alerta'), 'texto')
-
     this._ordemAtual = ''
+    this._service = new NegociacaoService()
 
-    ConnectionFactory.getConnection()
-      .then(connection => new NegociacaoDao(connection))
-      .then(dao => dao.listaTodos())
+    this._init()
+  }
+
+  _init () {
+    this._service.listaNegociacoes()
       .then(negociacoes => negociacoes.map(negociacao =>
         this._listaNegociacoes.setNegociacoes(negociacao))
       )
       .catch(erro => this._mensagem.texto = erro)
+
+    setInterval(() => {
+      this.importaNegociacoes()
+    }, 3000)
   }
 
   adiciona (event) {
@@ -30,20 +36,17 @@ class NegociacaoController {
     //console.log(typeof(this._inputData.value)) // imprime o tipo do valor
 
     let negociacao = this._criaNegociacao()
-    ConnectionFactory.getConnection()
-      .then(conexao => new NegociacaoDao(conexao).adiciona(negociacao))
-      .then(() => {
+    this._service.salvaNegociacao(negociacao)
+      .then(mensagem => {
         this._listaNegociacoes.setNegociacoes(negociacao)
-        this._mensagem.texto = 'Negociacao adicionada com sucesso'
+        this._mensagem.texto = mensagem
         this._limpaFormulario()
       })
       .catch(erro => this._mensagem.texto = erro)
   }
 
   apaga () {
-    ConnectionFactory.getConnection()
-      .then(connection => new NegociacaoDao(connection))
-      .then(dao => dao.apagaTodos())
+    this._service.removeNegociacao()
       .then(mensagem => {
         this._mensagem.texto = mensagem
         this._listaNegociacoes.clearNegociacoes();
@@ -60,8 +63,8 @@ class NegociacaoController {
   }
 
   importaNegociacoes () {
-    let service = new NegociacaoService()
-    service.obterNegociacoes().then(negociacoes => {
+    this._service.importaNegociacoes(this._listaNegociacoes.negociacoes)
+    .then(negociacoes => {
       negociacoes.map(negociacao => this._listaNegociacoes.setNegociacoes(negociacao))
       this._mensagem.texto = 'Negociações importadas com sucesso'
     })

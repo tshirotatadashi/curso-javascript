@@ -2,6 +2,7 @@ class NegociacaoService {
 
   constructor() {
     this._http = new HttpConnect()
+    this._connection = ConnectionFactory.getConnection()
   }
 
   obterNegociacoes () {
@@ -48,5 +49,36 @@ class NegociacaoService {
     .catch(erro => {
       throw new Error('Não foi possível importar as negociações da semana retrasada')
     })
+  }
+
+  salvaNegociacao (negociacao) {
+    return this._connection
+      .then(conexao => new NegociacaoDao(conexao))
+      .then(dao => dao.adiciona(negociacao))
+      .then(() => 'Negociacao adicionada com sucesso')
+      .catch(erro => { throw new Error(erro)})
+  }
+
+  removeNegociacao () {
+    return this._connection
+      .then(conexao => new NegociacaoDao(conexao))
+      .then(dao => dao.apagaTodos())
+      .catch(erro => {throw new Error(erro)})
+  }
+
+  listaNegociacoes () {
+    return this._connection
+      .then(conexao => new NegociacaoDao(conexao))
+      .then(dao => dao.listaTodos())
+      .catch(erro => {throw new Error(erro)})
+  }
+
+  importaNegociacoes (listaAtual) {
+    return this.obterNegociacoes().then(negociacoes =>
+      negociacoes.filter(negociacao =>
+        !listaAtual.some(negociacaoExistente =>
+          negociacao.isEquals(negociacaoExistente)
+        ))
+    )
   }
 }
