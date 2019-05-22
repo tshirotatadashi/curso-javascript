@@ -1,4 +1,4 @@
-class Negociacao {
+export class Negociacao {
 
   constructor (data, quantidade, valor) {
     this._data = new Date(data.getTime()) // "_" é uma convenção definindo que as propriedades que contenham _ só poderão ser acessadas pelos próprios métodos da classe

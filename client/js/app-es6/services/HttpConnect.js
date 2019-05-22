@@ -1,4 +1,4 @@
-class HttpConnect {
+export class HttpConnect {
 
   _handleErrors (res) {
     if (!res.ok) throw new Error(res.statusText)
